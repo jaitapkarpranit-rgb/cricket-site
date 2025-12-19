@@ -1,0 +1,61 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 16px;
+}
+
+.container {
+    max-width: 720px;
+    margin: auto;
+}
+
+.match-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.match-card {
+    background: #fff;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.status {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status.live { color: red; }
+.status.finished { color: green; }
+.status.upcoming { color: gray; }
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tab {
+    padding: 6px 12px;
+    background: #e0e0e0;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.tab.active {
+    background: #1bbf72;
+    color: white;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CricketBuzz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<h2>CricketBuzz 🏏</h2>
+<p>Matches | News | Teams</p>
+<hr>
+
+<form method="get">
+    <input
+        type="text"
+        name="q"
+        placeholder="Search team (CSK, India...)"
+        value="{{ request.args.get('q', '') }}"
+    />
+</form>
+
+<div class="tabs">
+    <a href="/" class="tab {% if not current %}active{% endif %}">All</a>
+    <a href="/live" class="tab {% if current == 'live' %}active{% endif %}">Live</a>
+    <a href="/finished" class="tab {% if current == 'finished' %}active{% endif %}">Finished</a>
+    <a href="/upcoming" class="tab {% if current == 'upcoming' %}active{% endif %}">Upcoming</a>
+</div>
+
+<div class="container">
+    <h3>Today's Matches</h3>
+
+    {% for match in matches %}
+        <a href="/match/{{ match.id }}" class="match-link">
+            <div class="match-card">
+                <span class="status {{ match.status | lower }}">{{ match.status }}</span><br>
+                <strong>{{ match.team1 }} vs {{ match.team2 }}</strong><br>
+                {{ match.team1 }} {{ match.score1 }}<br>
+                {{ match.team2 }} {{ match.score2 }}
+            </div>
+        </a>
+    {% endfor %}
+</div>
+
+</body>
+</html>
