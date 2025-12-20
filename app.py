@@ -31,7 +31,7 @@ def home(status=None):
     )
 
 
-@app.route("/match/<int:match_id>")
+@app.route("/match/<match_id>")
 def match_detail(match_id):
     matches = get_matches()
     match = next((m for m in matches if m["id"] == match_id), None)
@@ -40,6 +40,7 @@ def match_detail(match_id):
         return "Match not found", 404
 
     return render_template("match.html", match=match)
+
 
 
 if __name__ == "__main__":
