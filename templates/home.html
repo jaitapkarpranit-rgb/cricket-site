@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title>CricketBuzz</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -27,61 +27,49 @@
     </div>
 
     <!-- Search -->
-    <div class="search">
-        <form method="get">
-            <input
-                type="text"
-                name="q"
-                placeholder="Search team or series"
-                value="{{ request.args.get('q', '') }}"
-            />
-        </form>
-    </div>
+    <form method="get" style="margin-top:20px;">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search team (India, CSK, Australia...)"
+            value="{{ request.args.get('q', '') }}"
+            style="width:100%; padding:10px; font-size:14px;"
+        />
+    </form>
 
-    <!-- Section Title -->
-    <div class="section-title">Matches</div>
-
-    <!-- Matches List -->
-    <div class="matches">
+    <!-- Matches -->
+    <div class="matches" style="margin-top:25px;">
 
         {% for match in matches %}
-        <div class="match-row">
-            
-            <div class="match-status
-                {% if 'won' in match.status|lower or 'stumps' in match.status|lower %}
-                    finished
-                {% else %}
-                    live
-                {% endif %}
-            ">
-                {{ match.status }}
+        <a href="/match/{{ match.id }}" class="match-link">
+
+            <div class="match-row">
+
+                <div class="match-status">
+                    {{ match.status }}
+                </div>
+
+                <div class="match-teams">
+                    <strong>{{ match.team1 }}</strong><br>
+                    {{ match.team2 }}
+                </div>
+
+                <div class="match-scores">
+                    {{ match.score1 }}<br>
+                    {{ match.score2 }}
+                </div>
+
             </div>
 
-
-            <div class="match-teams">
-                <strong>{{ match.team1 }}</strong><br>
-                {{ match.team2 }}
-            </div>
-
-            <div class="match-scores">
-                {{ match.score1 }}<br>
-                {{ match.score2 }}
-            </div>
-
-        </div>
+        </a>
         {% endfor %}
 
         {% if matches|length == 0 %}
-        <div style="color:#999; font-size:14px; margin-top:20px;">
-            No matches available right now.
+        <div style="color:#888; font-size:14px; margin-top:20px;">
+            No matches available.
         </div>
         {% endif %}
 
-    </div>
-
-    <!-- Footer Note -->
-    <div class="footer-note">
-        Data may be delayed. Built for clarity, not noise.
     </div>
 
 </div>
