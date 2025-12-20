@@ -46,10 +46,17 @@
 
         {% for match in matches %}
         <div class="match-row">
-
-            <div class="match-status">
+            
+            <div class="match-status
+                {% if 'won' in match.status|lower or 'stumps' in match.status|lower %}
+                    finished
+                {% else %}
+                    live
+                {% endif %}
+            ">
                 {{ match.status }}
             </div>
+
 
             <div class="match-teams">
                 <strong>{{ match.team1 }}</strong><br>
