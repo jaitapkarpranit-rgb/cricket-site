@@ -1,75 +1,46 @@
-import os
 import requests
 
-RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
-RAPIDAPI_HOST = os.getenv("RAPIDAPI_HOST")
+CRICAPI_KEY = "35f9a069-2dfa-4ce4-8ec6-ca09a515e072"
 
-BASE_URL = f"https://{RAPIDAPI_HOST}"
+BASE_URL = "https://api.cricapi.com/v1"
 
 
 def get_matches():
-    try:
-        if not RAPIDAPI_KEY or not RAPIDAPI_HOST:
-            raise Exception("API keys missing")
-        return _get_live_matches()
-    except Exception as e:
-        print("API error:", e)
-        return _dummy_matches()
+    url = f"{BASE_URL}/currentMatches"
 
-
-def _get_live_matches():
-    url = f"{BASE_URL}/matches/v1/live"
-
-    headers = {
-        "x-rapidapi-key": RAPIDAPI_KEY,
-        "x-rapidapi-host": RAPIDAPI_HOST
+    params = {
+        "apikey": CRICAPI_KEY,
+        "offset": 0
     }
 
-    response = requests.get(url, headers=headers, timeout=5)
+    response = requests.get(url, params=params, timeout=10)
     data = response.json()
 
     matches = []
 
-    for type_block in data.get("typeMatches", []):
-        for series in type_block.get("seriesMatches", []):
-            wrapper = series.get("seriesAdWrapper")
-            if not wrapper:
-                continue
+    for m in data.get("data", []):
+        teams = m.get("teams", [])
 
-            for m in wrapper.get("matches", []):
-                info = m.get("matchInfo", {})
-                score = m.get("matchScore", {})
+        if len(teams) < 2:
+            continue
 
-                team1 = info.get("team1", {}).get("teamName", "")
-                team2 = info.get("team2", {}).get("teamName", "")
+        score = m.get("score", [])
 
-                matches.append({
-                    "id": info.get("matchId"),
-                    "team1": team1,
-                    "team2": team2,
-                    "score1": _score(score, 0),
-                    "score2": _score(score, 1),
-                    "status": info.get("status", "Live")
-                })
+        matches.append({
+            "id": m.get("id"),
+            "team1": teams[0],
+            "team2": teams[1],
+            "score1": format_score(score, 0),
+            "score2": format_score(score, 1),
+            "status": m.get("status", "")
+        })
 
-    return matches[:10]
+    return matches
 
 
-def _score(score, idx):
+def format_score(score_list, idx):
     try:
-        return score["teamScore"][idx]["inngs1"]["runs"]
+        s = score_list[idx]
+        return f"{s['r']}/{s['w']} ({s['o']} ov)"
     except Exception:
         return ""
-
-
-def _dummy_matches():
-    return [
-        {
-            "id": 1,
-            "team1": "India",
-            "team2": "Australia",
-            "score1": "245/6",
-            "score2": "230/10",
-            "status": "Finished"
-        }
-    ]
