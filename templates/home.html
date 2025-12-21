@@ -16,6 +16,7 @@
 
 <div class="container">
 
+  <!-- Header -->
   <div class="site-header">
     <div class="site-title">CricketBuzz</div>
     <div class="nav">
@@ -25,39 +26,101 @@
     </div>
   </div>
 
-  {% for match in matches %}
-    <a href="/match/{{ match.id }}">
-      <div class="match-card">
+  <div class="page-grid">
 
-        <div class="match-left">
-          <div class="match-teams">
-            {{ match.team1 }} vs {{ match.team2 }}
-          </div>
-          <div class="match-meta">
-            {{ match.venue }} • {{ match.date }}
-          </div>
+    <!-- LEFT: MATCHES -->
+    <div>
+
+      <!-- LIVE -->
+      <div class="section">
+        <div class="section-title">
+          <span class="live-dot"></span> Live Matches
         </div>
 
-        <div class="match-right">
-          <div class="status
-            {% if 'won' in match.status|lower or 'stumps' in match.status|lower %}
-              finished
-            {% else %}
-              live
-            {% endif %}
-          ">
-            {{ match.status }}
-          </div>
-          <div>
-            {{ match.score1 }}<br>
-            {{ match.score2 }}
-          </div>
-        </div>
-
+        {% for match in matches %}
+          {% if 'won' not in match.status|lower and 'stumps' not in match.status|lower %}
+            <a href="/match/{{ match.id }}">
+              <div class="match-card">
+                <div class="match-left">
+                  <div class="match-teams">
+                    {{ match.team1 }} vs {{ match.team2 }}
+                  </div>
+                  <div class="match-meta">
+                    {{ match.venue }}
+                  </div>
+                </div>
+                <div class="match-right">
+                  <div class="status live">{{ match.status }}</div>
+                  <div>{{ match.score1 }}<br>{{ match.score2 }}</div>
+                </div>
+              </div>
+            </a>
+          {% endif %}
+        {% endfor %}
       </div>
-    </a>
-  {% endfor %}
 
+      <!-- UPCOMING -->
+      <div class="section">
+        <div class="section-title">Upcoming</div>
+
+        {% for match in matches %}
+          {% if 'scheduled' in match.status|lower or 'starts' in match.status|lower %}
+            <a href="/match/{{ match.id }}">
+              <div class="match-card">
+                <div class="match-left">
+                  <div class="match-teams">
+                    {{ match.team1 }} vs {{ match.team2 }}
+                  </div>
+                  <div class="match-meta">
+                    {{ match.date }}
+                  </div>
+                </div>
+              </div>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- COMPLETED -->
+      <div class="section">
+        <div class="section-title">Completed</div>
+
+        {% for match in matches %}
+          {% if 'won' in match.status|lower or 'stumps' in match.status|lower %}
+            <a href="/match/{{ match.id }}">
+              <div class="match-card">
+                <div class="match-left">
+                  <div class="match-teams">
+                    {{ match.team1 }} vs {{ match.team2 }}
+                  </div>
+                  <div class="match-meta">
+                    {{ match.venue }}
+                  </div>
+                </div>
+                <div class="match-right">
+                  <div class="status finished">{{ match.status }}</div>
+                </div>
+              </div>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <!-- RIGHT: NEWS -->
+    <div>
+      <div class="news-box">
+        <div class="news-title">News</div>
+        <div class="news-placeholder">
+          Match reports, editorials, and cricket updates will appear here.
+          <br><br>
+          This section is reserved for future content.
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 </body>
