@@ -32,6 +32,38 @@
 
 <hr>
 
+{% if match.scorecard and match.scorecard.innings %}
+    <hr>
+    <h3>Batting</h3>
+
+    {% for inning in match.scorecard.innings %}
+        <h4>{{ inning.inning }}</h4>
+
+        <table border="1" cellpadding="6">
+            <tr>
+                <th>Batsman</th>
+                <th>R</th>
+                <th>B</th>
+                <th>4s</th>
+                <th>6s</th>
+                <th>SR</th>
+            </tr>
+
+            {% for bat in inning.batting %}
+            <tr>
+                <td>{{ bat.batsman }}</td>
+                <td>{{ bat.r }}</td>
+                <td>{{ bat.b }}</td>
+                <td>{{ bat.fours }}</td>
+                <td>{{ bat.sixes }}</td>
+                <td>{{ bat.sr }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+{% endif %}
+
+
 <p><a href="/">← Back to Matches</a></p>
 
 </body>
