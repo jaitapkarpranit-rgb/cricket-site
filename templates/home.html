@@ -16,61 +16,47 @@
 
 <div class="container">
 
-    <!-- Header -->
-    <div class="header">
-        <div class="logo">CricketBuzz</div>
-        <div class="nav">
-            <a href="/">Matches</a>
-            <a href="/series">Series</a>
-            <a href="/teams">Teams</a>
-        </div>
+  <div class="site-header">
+    <div class="site-title">CricketBuzz</div>
+    <div class="nav">
+      <a href="/">Matches</a>
+      <a href="/series">Series</a>
+      <a href="/teams">Teams</a>
     </div>
+  </div>
 
-    <!-- Search -->
-    <form method="get" style="margin-top:20px;">
-        <input
-            type="text"
-            name="q"
-            placeholder="Search team (India, CSK, Australia...)"
-            value="{{ request.args.get('q', '') }}"
-            style="width:100%; padding:10px; font-size:14px;"
-        />
-    </form>
+  {% for match in matches %}
+    <a href="/match/{{ match.id }}">
+      <div class="match-card">
 
-    <!-- Matches -->
-    <div class="matches" style="margin-top:25px;">
-
-        {% for match in matches %}
-        <a href="/match/{{ match.id }}" class="match-link">
-
-            <div class="match-row">
-
-                <div class="match-status">
-                    {{ match.status }}
-                </div>
-
-                <div class="match-teams">
-                    <strong>{{ match.team1 }}</strong><br>
-                    {{ match.team2 }}
-                </div>
-
-                <div class="match-scores">
-                    {{ match.score1 }}<br>
-                    {{ match.score2 }}
-                </div>
-
-            </div>
-
-        </a>
-        {% endfor %}
-
-        {% if matches|length == 0 %}
-        <div style="color:#888; font-size:14px; margin-top:20px;">
-            No matches available.
+        <div class="match-left">
+          <div class="match-teams">
+            {{ match.team1 }} vs {{ match.team2 }}
+          </div>
+          <div class="match-meta">
+            {{ match.venue }} • {{ match.date }}
+          </div>
         </div>
-        {% endif %}
 
-    </div>
+        <div class="match-right">
+          <div class="status
+            {% if 'won' in match.status|lower or 'stumps' in match.status|lower %}
+              finished
+            {% else %}
+              live
+            {% endif %}
+          ">
+            {{ match.status }}
+          </div>
+          <div>
+            {{ match.score1 }}<br>
+            {{ match.score2 }}
+          </div>
+        </div>
+
+      </div>
+    </a>
+  {% endfor %}
 
 </div>
 
