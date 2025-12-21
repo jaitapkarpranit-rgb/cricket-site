@@ -1,46 +1,58 @@
+import os
 import requests
 
-CRICAPI_KEY = "35f9a069-2dfa-4ce4-8ec6-ca09a515e072"
+CRICAPI_KEY = os.environ.get("CRICAPI_KEY")
 
-BASE_URL = "https://api.cricapi.com/v1"
+API_URL = "https://api.cricapi.com/v1/currentMatches"
 
 
 def get_matches():
-    url = f"{BASE_URL}/currentMatches"
+    if not CRICAPI_KEY:
+        print("❌ CRICAPI_KEY missing")
+        return []
 
-    params = {
-        "apikey": CRICAPI_KEY,
-        "offset": 0
-    }
-
-    response = requests.get(url, params=params, timeout=10)
-    data = response.json()
-
-    matches = []
-
-    for m in data.get("data", []):
-        teams = m.get("teams", [])
-
-        if len(teams) < 2:
-            continue
-
-        score = m.get("score", [])
-
-        matches.append({
-            "id": m.get("id"),
-            "team1": teams[0],
-            "team2": teams[1],
-            "score1": format_score(score, 0),
-            "score2": format_score(score, 1),
-            "status": m.get("status", "")
-        })
-
-    return matches
-
-
-def format_score(score_list, idx):
     try:
-        s = score_list[idx]
-        return f"{s['r']}/{s['w']} ({s['o']} ov)"
-    except Exception:
-        return ""
+        response = requests.get(
+            API_URL,
+            params={"apikey": CRICAPI_KEY},
+            timeout=10
+        )
+
+        data = response.json()
+        print("API STATUS:", data.get("status"))
+
+        if data.get("status") != "success":
+            print("API ERROR:", data)
+            return []
+
+        matches = []
+
+        for m in data.get("data", []):
+            teams = m.get("teams", [])
+            scores = m.get("score", [])
+
+            score1 = ""
+            score2 = ""
+
+            if len(scores) > 0:
+                score1 = f'{scores[0].get("r","")}/{scores[0].get("w","")}'
+            if len(scores) > 1:
+                score2 = f'{scores[1].get("r","")}/{scores[1].get("w","")}'
+
+            matches.append({
+                "id": m.get("id"),
+                "team1": teams[0] if len(teams) > 0 else "Team A",
+                "team2": teams[1] if len(teams) > 1 else "Team B",
+                "status": m.get("status", ""),
+                "venue": m.get("venue", ""),
+                "date": m.get("date", ""),
+                "score1": score1,
+                "score2": score2
+            })
+
+        print("MATCHES FETCHED:", len(matches))
+        return matches
+
+    except Exception as e:
+        print("EXCEPTION:", e)
+        return []
