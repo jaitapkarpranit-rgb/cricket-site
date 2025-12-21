@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from data import get_matches, get_match_detail
+import data   # 👈 IMPORTANT: direct module import (cache-safe)
 
 app = Flask(__name__)
 
@@ -41,7 +41,7 @@ def teams():
 @app.route("/")
 @app.route("/<status>")
 def home(status=None):
-    matches = get_matches()
+    matches = data.get_matches()
 
     # SEARCH
     search = request.args.get("q", "").lower()
@@ -51,7 +51,7 @@ def home(status=None):
             if search in m["team1"].lower() or search in m["team2"].lower()
         ]
 
-    # STATUS FILTER (live / finished / upcoming)
+    # STATUS FILTER
     if status:
         matches = [
             m for m in matches
@@ -65,11 +65,11 @@ def home(status=None):
     )
 
 
-# ---------- MATCH DETAIL (UPDATED ONLY HERE) ----------
+# ---------- MATCH DETAIL ----------
 
 @app.route("/match/<match_id>")
 def match_detail(match_id):
-    match = get_match_detail(match_id)
+    match = data.get_match_detail(match_id)
 
     if not match:
         return "Match not found", 404
