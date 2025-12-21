@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request
-from data import get_matches
+from data import get_matches, get_match_detail
 
 app = Flask(__name__)
 
 
-# ---------- STATIC PAGES (MUST COME FIRST) ----------
+# ---------- STATIC PAGES ----------
 
 @app.route("/series")
 def series():
@@ -51,7 +51,7 @@ def home(status=None):
             if search in m["team1"].lower() or search in m["team2"].lower()
         ]
 
-    # STATUS FILTER (tabs: live / finished / upcoming)
+    # STATUS FILTER (live / finished / upcoming)
     if status:
         matches = [
             m for m in matches
@@ -65,12 +65,11 @@ def home(status=None):
     )
 
 
-# ---------- MATCH DETAIL ----------
+# ---------- MATCH DETAIL (UPDATED ONLY HERE) ----------
 
 @app.route("/match/<match_id>")
 def match_detail(match_id):
-    matches = get_matches()
-    match = next((m for m in matches if m["id"] == match_id), None)
+    match = get_match_detail(match_id)
 
     if not match:
         return "Match not found", 404
