@@ -7,8 +7,10 @@
 <body>
 
 <h2>{{ match.name }}</h2>
+
 <p><strong>Status:</strong> {{ match.status }}</p>
 <p><strong>Venue:</strong> {{ match.venue }}</p>
+<p><strong>Date:</strong> {{ match.date }}</p>
 
 <hr>
 
@@ -18,13 +20,15 @@
     {% for inning in match.score %}
         <p>
             <strong>{{ inning.inning }}</strong><br>
-            {{ inning.r }}/{{ inning.w }} ({{ inning.o }} overs)
+            {{ inning.r }}/{{ inning.w }}
+            {% if inning.o %}
+                ({{ inning.o }} overs)
+            {% endif %}
         </p>
     {% endfor %}
 {% else %}
-    <p>Score not available yet.</p>
+    <p><em>Score not available yet</em></p>
 {% endif %}
-
 
 <hr>
 
