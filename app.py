@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-import data   # 👈 IMPORTANT: direct module import (cache-safe)
+import data   # IMPORTANT: do NOT change this
 
 app = Flask(__name__)
 
@@ -36,7 +36,7 @@ def teams():
     return render_template("teams.html", teams=teams_list)
 
 
-# ---------- HOME & STATUS FILTER ----------
+# ---------- HOME ----------
 
 @app.route("/")
 @app.route("/<status>")
