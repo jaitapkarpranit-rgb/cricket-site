@@ -6,6 +6,16 @@
 </head>
 <body>
 
+    {% if not match %}
+    <div class="container">
+        <h2>Match details not available</h2>
+        <p style="color:gray;">
+            This match does not have detailed data from the provider.
+        </p>
+        <p><a href="/">← Back to Matches</a></p>
+    </div>
+{% else %}
+
 <div class="container">
 
     <h2>{{ match.name }}</h2>
@@ -80,6 +90,6 @@
     <p><a href="/">← Back to Matches</a></p>
 
 </div>
-
+    {% endif %}
 </body>
 </html>
