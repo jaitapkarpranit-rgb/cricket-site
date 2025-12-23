@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request
-import json
-import data   # DO NOT CHANGE data.py
+import data   # DO NOT CHANGE THIS
 
 app = Flask(__name__)
 
@@ -64,18 +63,12 @@ def home(status=None):
     )
 
 
-# ---------- MATCH DETAIL (JSON LOGGING HERE) ----------
+# ---------- MATCH DETAIL (RESTORED – WORKING) ----------
 
 @app.route("/match/<match_id>")
 def match_detail(match_id):
     match = data.get_match_detail(match_id)
     scorecard = data.get_match_scorecard(match_id)
-
-    # ===== FORCE PRINT FANTASY SCORECARD JSON TO RENDER LOGS =====
-    print("\n================ FANTASY SCORECARD JSON ================\n", flush=True)
-    print(json.dumps(scorecard, indent=2), flush=True)
-    print("\n========================================================\n", flush=True)
-    # ==========================================================
 
     if not match:
         return "Match not found", 404
