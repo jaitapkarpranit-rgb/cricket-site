@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-import data   # DO NOT CHANGE THIS
+import data   # IMPORTANT: do NOT change this
 
 app = Flask(__name__)
 
@@ -43,6 +43,7 @@ def teams():
 def home(status=None):
     matches = data.get_matches()
 
+    # SEARCH
     search = request.args.get("q", "").lower()
     if search:
         matches = [
@@ -50,6 +51,7 @@ def home(status=None):
             if search in m["team1"].lower() or search in m["team2"].lower()
         ]
 
+    # STATUS FILTER
     if status:
         matches = [
             m for m in matches
@@ -63,18 +65,20 @@ def home(status=None):
     )
 
 
-# ---------- MATCH DETAIL (RESTORED – WORKING) ----------
+# ---------- MATCH DETAIL ----------
 
 @app.route("/match/<match_id>")
 def match_detail(match_id):
     match = data.get_match_detail(match_id)
-    scorecard = data.get_match_scorecard(match_id)
 
     if not match:
         return "Match not found", 404
 
+    scorecard = data.get_match_scorecard(match_id)
     match["scorecard"] = scorecard
+
     return render_template("match.html", match=match)
+
 
 
 # ---------- RUN ----------
