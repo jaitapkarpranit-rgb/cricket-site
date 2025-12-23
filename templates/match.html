@@ -18,11 +18,68 @@
 
     <h3>Score</h3>
 
-    {% if match.scorecard and match.scorecard.score %}
-        {% for inning in match.scorecard.score %}
-            <p>
-                <strong>{{ inning.inning }}</strong><br>
-                {{ inning.r }}/{{ inning.w }}
-                {% if inning.o %}
-                    ({{ inning.o }} overs)
-                {% endif
+    {% if match.scorecard is defined and match.scorecard %}
+        {% if match.scorecard.score is defined %}
+            {% for inning in match.scorecard.score %}
+                <p>
+                    <strong>{{ inning.inning }}</strong><br>
+                    {{ inning.r }}/{{ inning.w }}
+                    {% if inning.o is defined %}
+                        ({{ inning.o }} overs)
+                    {% endif %}
+                </p>
+            {% endfor %}
+        {% else %}
+            <p style="color:gray;"><em>Score not available.</em></p>
+        {% endif %}
+    {% else %}
+        <p style="color:gray;"><em>Scorecard not available.</em></p>
+    {% endif %}
+
+    <hr>
+
+    <h3>Batting</h3>
+
+    {% if match.scorecard is defined and match.scorecard and match.scorecard.innings is defined %}
+        {% for inning in match.scorecard.innings %}
+            <h4>{{ inning.inning }}</h4>
+
+            {% if inning.batting is defined %}
+            <table border="1" cellpadding="6">
+                <tr>
+                    <th>Batsman</th>
+                    <th>R</th>
+                    <th>B</th>
+                    <th>4s</th>
+                    <th>6s</th>
+                    <th>SR</th>
+                </tr>
+
+                {% for bat in inning.batting %}
+                <tr>
+                    <td>{{ bat.batsman }}</td>
+                    <td>{{ bat.r }}</td>
+                    <td>{{ bat.b }}</td>
+                    <td>{{ bat.fours }}</td>
+                    <td>{{ bat.sixes }}</td>
+                    <td>{{ bat.sr }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <p style="color:gray;"><em>Batting data not available.</em></p>
+            {% endif %}
+
+        {% endfor %}
+    {% else %}
+        <p style="color:gray;"><em>Detailed scorecard not available.</em></p>
+    {% endif %}
+
+    <hr>
+
+    <p><a href="/">← Back to Matches</a></p>
+
+</div>
+
+</body>
+</html>
