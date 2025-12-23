@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
-import data   # IMPORTANT: do NOT change this
+import json
+import data   # DO NOT CHANGE data.py
 
 app = Flask(__name__)
 
@@ -43,7 +44,6 @@ def teams():
 def home(status=None):
     matches = data.get_matches()
 
-    # SEARCH
     search = request.args.get("q", "").lower()
     if search:
         matches = [
@@ -51,7 +51,6 @@ def home(status=None):
             if search in m["team1"].lower() or search in m["team2"].lower()
         ]
 
-    # STATUS FILTER
     if status:
         matches = [
             m for m in matches
@@ -65,15 +64,23 @@ def home(status=None):
     )
 
 
-# ---------- MATCH DETAIL ----------
+# ---------- MATCH DETAIL (JSON LOGGING HERE) ----------
 
 @app.route("/match/<match_id>")
 def match_detail(match_id):
     match = data.get_match_detail(match_id)
+    scorecard = data.get_match_scorecard(match_id)
+
+    # ===== FORCE PRINT FANTASY SCORECARD JSON TO RENDER LOGS =====
+    print("\n================ FANTASY SCORECARD JSON ================\n", flush=True)
+    print(json.dumps(scorecard, indent=2), flush=True)
+    print("\n========================================================\n", flush=True)
+    # ==========================================================
 
     if not match:
         return "Match not found", 404
 
+    match["scorecard"] = scorecard
     return render_template("match.html", match=match)
 
 
