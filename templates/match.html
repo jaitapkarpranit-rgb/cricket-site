@@ -6,65 +6,23 @@
 </head>
 <body>
 
-<h2>{{ match.name }}</h2>
+<div class="container">
 
-<p><strong>Status:</strong> {{ match.status }}</p>
-<p><strong>Venue:</strong> {{ match.venue }}</p>
-<p><strong>Date:</strong> {{ match.date }}</p>
+    <h2>{{ match.name }}</h2>
 
-<hr>
+    <p><strong>Status:</strong> {{ match.status }}</p>
+    <p><strong>Venue:</strong> {{ match.venue }}</p>
+    <p><strong>Date:</strong> {{ match.date }}</p>
 
-<h3>Score</h3>
-
-{% if match.score %}
-    {% for inning in match.score %}
-        <p>
-            <strong>{{ inning.inning }}</strong><br>
-            {{ inning.r }}/{{ inning.w }}
-            {% if inning.o %}
-                ({{ inning.o }} overs)
-            {% endif %}
-        </p>
-    {% endfor %}
-{% else %}
-    <p><em>Score not available yet</em></p>
-{% endif %}
-
-<hr>
-
-{% if match.scorecard and match.scorecard.innings %}
     <hr>
-    <h3>Batting</h3>
 
-    {% for inning in match.scorecard.innings %}
-        <h4>{{ inning.inning }}</h4>
+    <h3>Score</h3>
 
-        <table border="1" cellpadding="6">
-            <tr>
-                <th>Batsman</th>
-                <th>R</th>
-                <th>B</th>
-                <th>4s</th>
-                <th>6s</th>
-                <th>SR</th>
-            </tr>
-
-            {% for bat in inning.batting %}
-            <tr>
-                <td>{{ bat.batsman }}</td>
-                <td>{{ bat.r }}</td>
-                <td>{{ bat.b }}</td>
-                <td>{{ bat.fours }}</td>
-                <td>{{ bat.sixes }}</td>
-                <td>{{ bat.sr }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% endfor %}
-{% endif %}
-
-
-<p><a href="/">← Back to Matches</a></p>
-
-</body>
-</html>
+    {% if match.scorecard and match.scorecard.score %}
+        {% for inning in match.scorecard.score %}
+            <p>
+                <strong>{{ inning.inning }}</strong><br>
+                {{ inning.r }}/{{ inning.w }}
+                {% if inning.o %}
+                    ({{ inning.o }} overs)
+                {% endif
