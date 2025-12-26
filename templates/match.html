@@ -2,6 +2,15 @@
 <html>
 <head>
     <title>{{ match.name if match and match.name else "Live Cricket Match" }} | CricketBuzz</title>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W2DN8JBYCG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-W2DN8JBYCG');
+    </script>
+
     <meta name="description" content="Live scorecard, batting and bowling details for this cricket match on CricketBuzz.">
     <meta name="robots" content="index, follow">
     <link rel="stylesheet" href="/static/css/style.css">
