@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ match.name }}</title>
+    <title>{{ match.name if match and match.name else "Match Details" }}</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -28,7 +28,7 @@
 
     <h3>Score</h3>
 
-    {% if match.scorecard is defined and match.scorecard %}
+    {% if match.scorecard and match.scorecard.get('innings') %}
         {% if match.scorecard.score is defined %}
             {% for inning in match.scorecard.score %}
                 <p>
@@ -50,8 +50,8 @@
 
     <h3>Batting</h3>
 
-    {% if match.scorecard is defined and match.scorecard and match.scorecard.innings is defined %}
-        {% for inning in match.scorecard.innings %}
+    {% if match.scorecard and match.scorecard.get('innings') %}
+        {% for inning in match.scorecard.get('innings', []) %}
             <h4>{{ inning.inning }}</h4>
 
             {% if inning.batting is defined %}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teams | CricketBuzz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="container">
+    <a href="/">← Back to matches</a>
+
+    <h2>Teams</h2>
+
+    <div class="grid">
+        {% for t in teams %}
+            <div class="card">
+                🏏 {{ t }}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>

@@ -71,13 +71,19 @@ def home(status=None):
 def match_detail(match_id):
     match = data.get_match_detail(match_id)
 
-    if not match:
-        return "Match not found", 404
+    if not match or not isinstance(match, dict):
+        return render_template("match.html", match=None)
 
     scorecard = data.get_match_scorecard(match_id)
+
+    # Ensure scorecard is always a dict
+    if not scorecard or not isinstance(scorecard, dict):
+        scorecard = {}
+
     match["scorecard"] = scorecard
 
     return render_template("match.html", match=match)
+
 
 
 

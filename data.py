@@ -83,3 +83,30 @@ def get_match_detail(match_id):
     except Exception as e:
         print("MATCH DETAIL EXCEPTION:", e)
         return None
+
+
+def get_match_scorecard(match_id):
+    if not CRICAPI_KEY:
+        return None
+
+    try:
+        response = requests.get(
+            "https://api.cricapi.com/v1/scorecard",
+            params={
+                "apikey": CRICAPI_KEY,
+                "id": match_id
+            },
+            timeout=10
+        )
+
+        data = response.json()
+
+        if data.get("status") != "success":
+            print("SCORECARD ERROR:", data)
+            return None
+
+        return data.get("data")
+
+    except Exception as e:
+        print("SCORECARD EXCEPTION:", e)
+        return None

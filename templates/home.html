@@ -3,124 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <title>CricketBuzz</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <!-- CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
 <div class="container">
 
-  <!-- Header -->
-  <div class="site-header">
-    <div class="site-title">CricketBuzz</div>
-    <div class="nav">
-      <a href="/">Matches</a>
-      <a href="/series">Series</a>
-      <a href="/teams">Teams</a>
+    <!-- HEADER -->
+    <div class="site-header">
+        <div class="site-title">CricketBuzz</div>
+        <div class="nav">
+            <a href="/">Matches</a>
+            <a href="/series">Series</a>
+            <a href="/teams">Teams</a>
+        </div>
     </div>
-  </div>
 
-  <div class="page-grid">
+    <input class="search-box" type="text" placeholder="Search team (India, CSK, Australia...)">
 
-    <!-- LEFT: MATCHES -->
-    <div>
+    <div class="page-grid">
 
-      <!-- LIVE -->
-      <div class="section">
-        <div class="section-title">
-          <span class="live-dot"></span> Live Matches
+        <!-- LEFT COLUMN -->
+        <div>
+
+            <!-- LIVE MATCHES -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="live-dot"></span> Live Matches
+                </div>
+
+                {% for match in matches %}
+                    {% if 'won' not in match.status|lower and 'stumps' not in match.status|lower %}
+                        <a href="/match/{{ match.id }}" class="match-link">
+                            <div class="match-card">
+                                <div>
+                                    <div class="match-teams">{{ match.team1 }} vs {{ match.team2 }}</div>
+                                    <div class="match-meta">{{ match.venue }}</div>
+                                </div>
+                                <div class="match-right">
+                                    <div class="status live">{{ match.status }}</div>
+                                    <div>{{ match.score1 }}<br>{{ match.score2 }}</div>
+                                </div>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- UPCOMING -->
+            <div class="section">
+                <div class="section-title">Upcoming</div>
+
+                {% for match in matches %}
+                    {% if 'scheduled' in match.status|lower or 'starts' in match.status|lower %}
+                        <a href="/match/{{ match.id }}" class="match-link">
+                            <div class="match-card">
+                                <div>
+                                    <div class="match-teams">{{ match.team1 }} vs {{ match.team2 }}</div>
+                                    <div class="match-meta">{{ match.date }}</div>
+                                </div>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- COMPLETED -->
+            <div class="section">
+                <div class="section-title">Completed</div>
+
+                {% for match in matches %}
+                    {% if 'won' in match.status|lower or 'stumps' in match.status|lower %}
+                        <a href="/match/{{ match.id }}" class="match-link">
+                            <div class="match-card">
+                                <div>
+                                    <div class="match-teams">{{ match.team1 }} vs {{ match.team2 }}</div>
+                                    <div class="match-meta">{{ match.venue }}</div>
+                                </div>
+                                <div class="status finished">{{ match.status }}</div>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
         </div>
 
-        {% for match in matches %}
-          {% if 'won' not in match.status|lower and 'stumps' not in match.status|lower %}
-            <a href="/match/{{ match.id }}">
-              <div class="match-card">
-                <div class="match-left">
-                  <div class="match-teams">
-                    {{ match.team1 }} vs {{ match.team2 }}
-                  </div>
-                  <div class="match-meta">
-                    {{ match.venue }}
-                  </div>
+        <!-- RIGHT COLUMN : NEWS -->
+        <div>
+            <a href="#" class="news-link">
+                <div class="news-box">
+                    <div class="news-tour">Sri Lanka Women tour of India, 2025</div>
+                    <div class="news-headline">Bowlers, Rodrigues give India early lead</div>
+                    <div class="news-meta">
+                        by Staff • Last updated on Sun, Dec 21, 2025 • 10:13 PM
+                    </div>
+
+                    <img src="/static/images/india-women.jpg" class="news-image">
+
+                    <div class="news-content">
+                        Jemimah Rodrigues' fifty and disciplined bowling helped India take an early lead in the T20I series.
+                    </div>
                 </div>
-                <div class="match-right">
-                  <div class="status live">{{ match.status }}</div>
-                  <div>{{ match.score1 }}<br>{{ match.score2 }}</div>
-                </div>
-              </div>
             </a>
-          {% endif %}
-        {% endfor %}
-      </div>
-
-      <!-- UPCOMING -->
-      <div class="section">
-        <div class="section-title">Upcoming</div>
-
-        {% for match in matches %}
-          {% if 'scheduled' in match.status|lower or 'starts' in match.status|lower %}
-            <a href="/match/{{ match.id }}">
-              <div class="match-card">
-                <div class="match-left">
-                  <div class="match-teams">
-                    {{ match.team1 }} vs {{ match.team2 }}
-                  </div>
-                  <div class="match-meta">
-                    {{ match.date }}
-                  </div>
-                </div>
-              </div>
-            </a>
-          {% endif %}
-        {% endfor %}
-      </div>
-
-      <!-- COMPLETED -->
-      <div class="section">
-        <div class="section-title">Completed</div>
-
-        {% for match in matches %}
-          {% if 'won' in match.status|lower or 'stumps' in match.status|lower %}
-            <a href="/match/{{ match.id }}">
-              <div class="match-card">
-                <div class="match-left">
-                  <div class="match-teams">
-                    {{ match.team1 }} vs {{ match.team2 }}
-                  </div>
-                  <div class="match-meta">
-                    {{ match.venue }}
-                  </div>
-                </div>
-                <div class="match-right">
-                  <div class="status finished">{{ match.status }}</div>
-                </div>
-              </div>
-            </a>
-          {% endif %}
-        {% endfor %}
-      </div>
-
-    </div>
-
-    <!-- RIGHT: NEWS -->
-    <div>
-      <div class="news-box">
-        <div class="news-title">News</div>
-        <div class="news-placeholder">
-          Match reports, editorials, and cricket updates will appear here.
-          <br><br>
-          This section is reserved for future content.
         </div>
-      </div>
-    </div>
 
-  </div>
+    </div>
 </div>
 
 </body>
