@@ -87,6 +87,23 @@ def match_detail(match_id):
     return render_template("match.html", match=match)
 
 
+#----------Policy-----------
+
+@app.route("/privacy-policy")
+def privacy_policy():
+    return render_template("privacy.html")
+
+
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")
+
+
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
+
+
 
 
 # ---------- RUN ----------
