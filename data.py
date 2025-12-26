@@ -1,12 +1,25 @@
 import os
 import requests
 
+import time
+
+_cache = {
+    "matches": None,
+    "timestamp": 0
+}
+
+
 CRICAPI_KEY = os.environ.get("CRICAPI_KEY")
 
 API_URL = "https://api.cricapi.com/v1/currentMatches"
 
 
 def get_matches():
+    global _cache
+    # Return cached data if less than 60 seconds old
+    if isinstance(_cache["matches"], list) and (time.time() - _cache["timestamp"] < 60):
+        return _cache["matches"]
+
     if not CRICAPI_KEY:
         print("❌ CRICAPI_KEY missing")
         return []
@@ -51,6 +64,8 @@ def get_matches():
             })
 
         print("MATCHES FETCHED:", len(matches))
+        _cache["matches"] = matches
+        _cache["timestamp"] = time.time()
         return matches
 
     except Exception as e:

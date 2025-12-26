@@ -42,6 +42,8 @@ def teams():
 @app.route("/<status>")
 def home(status=None):
     matches = data.get_matches()
+    if not matches:
+        matches = []
 
     # SEARCH
     search = request.args.get("q", "").lower()
