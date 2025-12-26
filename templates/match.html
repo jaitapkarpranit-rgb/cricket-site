@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ match.name if match and match.name else "Match Details" }}</title>
+    <title>{{ match.name if match and match.name else "Live Cricket Match" }} | CricketBuzz</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -82,7 +82,7 @@
 
         {% endfor %}
     {% else %}
-        <p style="color:gray;"><em>Detailed scorecard not available.</em></p>
+        <p style="color:gray;"> Scorecard will appear once the match begins.</p>
     {% endif %}
 
     <hr>
