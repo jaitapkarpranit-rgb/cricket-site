@@ -109,18 +109,22 @@ def get_match_scorecard(match_id):
     fixture = _get(
         f"fixtures/{match_id}",
         {
-            "include": "innings,innings.runs,innings.batting.batsman,innings.bowling.bowler"
+            "include": "runs.team,runs.batting.batsman,runs.bowling.bowler"
         }
     )
 
     if not fixture:
         return None
 
+    runs = fixture.get("runs", [])
+    if not runs:
+        return None
+
     innings_data = []
 
-    for inn in fixture.get("innings", []):
+    for r in runs:
         innings_data.append({
-            "inning": inn.get("name", ""),
+            "inning": f"{(r.get('team') or {}).get('name','')} Innings",
             "batting": [
                 {
                     "batsman": (b.get("batsman") or {}).get("fullname", ""),
@@ -130,7 +134,7 @@ def get_match_scorecard(match_id):
                     "sixes": b.get("six_x", ""),
                     "sr": b.get("rate", "")
                 }
-                for b in inn.get("batting", [])
+                for b in r.get("batting", [])
             ],
             "bowling": [
                 {
@@ -140,10 +144,11 @@ def get_match_scorecard(match_id):
                     "w": bo.get("wickets", ""),
                     "econ": bo.get("rate", "")
                 }
-                for bo in inn.get("bowling", [])
+                for bo in r.get("bowling", [])
             ]
         })
 
     return {
         "innings": innings_data
     }
+
