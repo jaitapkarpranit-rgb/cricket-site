@@ -39,62 +39,60 @@
 
     <h3>Score</h3>
 
-    {% if match.scorecard and match.scorecard.get('innings') %}
-        {% if match.scorecard.score is defined %}
-            {% for inning in match.scorecard.score %}
-                <p>
-                    <strong>{{ inning.inning }}</strong><br>
-                    {{ inning.r }}/{{ inning.w }}
-                    {% if inning.o is defined %}
-                        ({{ inning.o }} overs)
-                    {% endif %}
-                </p>
-            {% endfor %}
+    {% if match.scorecard and match.scorecard.innings %}
+    {% for inning in match.scorecard.innings %}
+        <p>
+        <strong>{{ inning.inning }}</strong><br>
+        {% if inning.batting and inning.batting|length > 0 %}
+            {{ inning.batting[0].r }}/{{ inning.batting|sum(attribute='w') if false else '' }}
         {% else %}
-            <p style="color:gray;"><em>Score not available.</em></p>
+            <em>Score not available yet</em>
         {% endif %}
+        </p>
+    {% endfor %}
     {% else %}
-        <p style="color:gray;"><em>Scorecard not available.</em></p>
+    <p style="color:gray;"><em>Score will appear once the match starts.</em></p>
     {% endif %}
+
 
     <hr>
 
     <h3>Batting</h3>
 
-    {% if match.scorecard and match.scorecard.get('innings') %}
-        {% for inning in match.scorecard.get('innings', []) %}
-            <h4>{{ inning.inning }}</h4>
+    {% if match.scorecard and match.scorecard.innings %}
+    {% for inning in match.scorecard.innings %}
+        <h4>{{ inning.inning }}</h4>
 
-            {% if inning.batting is defined %}
-            <table border="1" cellpadding="6">
-                <tr>
-                    <th>Batsman</th>
-                    <th>R</th>
-                    <th>B</th>
-                    <th>4s</th>
-                    <th>6s</th>
-                    <th>SR</th>
-                </tr>
+        {% if inning.batting and inning.batting|length > 0 %}
+        <table border="1" cellpadding="6">
+            <tr>
+            <th>Batsman</th>
+            <th>R</th>
+            <th>B</th>
+            <th>4s</th>
+            <th>6s</th>
+            <th>SR</th>
+            </tr>
 
-                {% for bat in inning.batting %}
-                <tr>
-                    <td>{{ bat.batsman }}</td>
-                    <td>{{ bat.r }}</td>
-                    <td>{{ bat.b }}</td>
-                    <td>{{ bat.fours }}</td>
-                    <td>{{ bat.sixes }}</td>
-                    <td>{{ bat.sr }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% else %}
-                <p style="color:gray;"><em>Batting data not available.</em></p>
-            {% endif %}
-
-        {% endfor %}
+            {% for bat in inning.batting %}
+            <tr>
+            <td>{{ bat.batsman }}</td>
+            <td>{{ bat.r }}</td>
+            <td>{{ bat.b }}</td>
+            <td>{{ bat.fours }}</td>
+            <td>{{ bat.sixes }}</td>
+            <td>{{ bat.sr }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p style="color:gray;"><em>Batting data not available yet.</em></p>
+        {% endif %}
+    {% endfor %}
     {% else %}
-        <p style="color:gray;"> Scorecard will appear once the match begins.</p>
+    <p style="color:gray;"><em>Batting will appear once play begins.</em></p>
     {% endif %}
+
 
     <hr>
 
