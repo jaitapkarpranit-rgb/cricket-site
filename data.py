@@ -109,7 +109,7 @@ def get_match_scorecard(match_id):
     fixture = _get(
         f"fixtures/{match_id}",
         {
-            "include": "innings.batting.batsman,innings.bowling.bowler"
+            "include": "innings,innings.runs,innings.batting.batsman,innings.bowling.bowler"
         }
     )
 
