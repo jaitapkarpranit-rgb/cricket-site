@@ -1,127 +1,149 @@
 import os
 import requests
-
-import time
-
-_cache = {
-    "matches": None,
-    "timestamp": 0
-}
+from datetime import datetime, timedelta
 
 
-CRICAPI_KEY = os.environ.get("CRICAPI_KEY")
+SPORTMONKS_TOKEN = os.environ.get("SPORTMONKS_TOKEN")
+BASE_URL = "https://cricket.sportmonks.com/api/v2.0"
 
-API_URL = "https://api.cricapi.com/v1/currentMatches"
 
+def _get(endpoint, params=None):
+    if not SPORTMONKS_TOKEN:
+        print("❌ SPORTMONKS_TOKEN missing")
+        return None
+
+    if params is None:
+        params = {}
+
+    params["api_token"] = SPORTMONKS_TOKEN
+
+    try:
+        response = requests.get(
+            f"{BASE_URL}/{endpoint}",
+            params=params,
+            timeout=10
+        )
+        data = response.json()
+        return data.get("data")
+    except Exception as e:
+        print("❌ SportMonks API error:", e)
+        return None
+
+
+# ---------- MATCH LIST ----------
 
 def get_matches():
-    global _cache
-    # Return cached data if less than 60 seconds old
-    if isinstance(_cache["matches"], list) and (time.time() - _cache["timestamp"] < 60):
-        return _cache["matches"]
+    from datetime import datetime, timedelta
 
-    if not CRICAPI_KEY:
-        print("❌ CRICAPI_KEY missing")
+    today = datetime.utcnow().date()
+    start = today - timedelta(days=2)
+    end = today + timedelta(days=7)
+
+    fixtures = _get(
+        "fixtures",
+        {
+            "include": "localteam,visitorteam,venue,runs",
+            "filter[starts_between]": f"{start},{end}",
+            "sort": "starting_at"
+        }
+    )
+
+
+    if not fixtures:
         return []
 
-    try:
-        response = requests.get(
-            API_URL,
-            params={"apikey": CRICAPI_KEY},
-            timeout=10
-        )
+    matches = []
 
-        data = response.json()
-        print("API STATUS:", data.get("status"))
+    for f in fixtures:
+        local = f.get("localteam", {})
+        visitor = f.get("visitorteam", {})
+        runs = f.get("runs", [])
 
-        if data.get("status") != "success":
-            print("API ERROR:", data)
-            return []
+        score1 = ""
+        score2 = ""
 
-        matches = []
+        if len(runs) > 0:
+            score1 = f'{runs[0].get("score","")}/{runs[0].get("wickets","")}'
+        if len(runs) > 1:
+            score2 = f'{runs[1].get("score","")}/{runs[1].get("wickets","")}'
 
-        for m in data.get("data", []):
-            teams = m.get("teams", [])
-            scores = m.get("score", [])
+        matches.append({
+            "id": f.get("id"),
+            "team1": local.get("name", "Team A"),
+            "team2": visitor.get("name", "Team B"),
+            "status": f.get("status", ""),
+            "venue": (f.get("venue") or {}).get("name", ""),
+            "date": f.get("starting_at", ""),
+            "score1": score1,
+            "score2": score2
+        })
 
-            score1 = ""
-            score2 = ""
+    return matches
 
-            if len(scores) > 0:
-                score1 = f'{scores[0].get("r","")}/{scores[0].get("w","")}'
-            if len(scores) > 1:
-                score2 = f'{scores[1].get("r","")}/{scores[1].get("w","")}'
 
-            matches.append({
-                "id": m.get("id"),
-                "team1": teams[0] if len(teams) > 0 else "Team A",
-                "team2": teams[1] if len(teams) > 1 else "Team B",
-                "status": m.get("status", ""),
-                "venue": m.get("venue", ""),
-                "date": m.get("date", ""),
-                "score1": score1,
-                "score2": score2
-            })
-
-        print("MATCHES FETCHED:", len(matches))
-        _cache["matches"] = matches
-        _cache["timestamp"] = time.time()
-        return matches
-
-    except Exception as e:
-        print("EXCEPTION:", e)
-        return []
-
+# ---------- MATCH DETAIL ----------
 
 def get_match_detail(match_id):
-    if not CRICAPI_KEY:
+    fixture = _get(
+        f"fixtures/{match_id}",
+        {
+            "include": "localteam,visitorteam,venue"
+        }
+    )
+
+    if not fixture:
         return None
 
-    try:
-        response = requests.get(
-            "https://api.cricapi.com/v1/match_info",
-            params={
-                "apikey": CRICAPI_KEY,
-                "id": match_id
-            },
-            timeout=10
-        )
+    return {
+        "id": fixture.get("id"),
+        "name": f'{fixture.get("localteam", {}).get("name","")} vs {fixture.get("visitorteam", {}).get("name","")}',
+        "status": fixture.get("status", ""),
+        "venue": (fixture.get("venue") or {}).get("name", ""),
+        "date": fixture.get("starting_at", "")
+    }
 
-        data = response.json()
 
-        if data.get("status") != "success":
-            print("MATCH INFO ERROR:", data)
-            return None
-
-        return data.get("data")
-
-    except Exception as e:
-        print("MATCH DETAIL EXCEPTION:", e)
-        return None
-
+# ---------- SCORECARD ----------
 
 def get_match_scorecard(match_id):
-    if not CRICAPI_KEY:
+    fixture = _get(
+        f"fixtures/{match_id}",
+        {
+            "include": "innings.batting.batsman,innings.bowling.bowler"
+        }
+    )
+
+    if not fixture:
         return None
 
-    try:
-        response = requests.get(
-            "https://api.cricapi.com/v1/scorecard",
-            params={
-                "apikey": CRICAPI_KEY,
-                "id": match_id
-            },
-            timeout=10
-        )
+    innings_data = []
 
-        data = response.json()
+    for inn in fixture.get("innings", []):
+        innings_data.append({
+            "inning": inn.get("name", ""),
+            "batting": [
+                {
+                    "batsman": (b.get("batsman") or {}).get("fullname", ""),
+                    "r": b.get("score", ""),
+                    "b": b.get("balls", ""),
+                    "fours": b.get("four_x", ""),
+                    "sixes": b.get("six_x", ""),
+                    "sr": b.get("rate", "")
+                }
+                for b in inn.get("batting", [])
+            ],
+            "bowling": [
+                {
+                    "bowler": (bo.get("bowler") or {}).get("fullname", ""),
+                    "o": bo.get("overs", ""),
+                    "r": bo.get("runs", ""),
+                    "w": bo.get("wickets", ""),
+                    "econ": bo.get("rate", "")
+                }
+                for bo in inn.get("bowling", [])
+            ]
+        })
 
-        if data.get("status") != "success":
-            print("SCORECARD ERROR:", data)
-            return None
-
-        return data.get("data")
-
-    except Exception as e:
-        print("SCORECARD EXCEPTION:", e)
-        return None
+    return {
+        "innings": innings_data
+    }
