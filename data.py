@@ -113,6 +113,17 @@ def get_match_scorecard(match_id):
         }
     )
 
+    print("==== RAW SPORTMONKS FIXTURE ====")
+    print(fixture)
+    print("==== END FIXTURE ====")
+
+    fixture = _get(
+        f"fixtures/{match_id}",
+        {
+            "include": "runs.team,runs.batting.batsman,runs.bowling.bowler"
+        }
+    )
+
     if not fixture:
         return None
 
