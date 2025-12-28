@@ -50,7 +50,7 @@
                 </div>
 
                 {% for match in matches %}
-                    {% if 'won' not in match.status|lower and 'stumps' not in match.status|lower %}
+                    {% if match.status|lower not in ['finished', 'abandoned', 'cancelled', 'ns'] %}
                         <a href="/match/{{ match.id }}" class="match-link">
                             <div class="match-card">
                                 <div>
@@ -72,7 +72,7 @@
                 <div class="section-title">Upcoming</div>
 
                 {% for match in matches %}
-                    {% if 'scheduled' in match.status|lower or 'starts' in match.status|lower %}
+                    {% if match.status|lower == 'ns' %}
                         <a href="/match/{{ match.id }}" class="match-link">
                             <div class="match-card">
                                 <div>
@@ -90,7 +90,7 @@
                 <div class="section-title">Completed</div>
 
                 {% for match in matches %}
-                    {% if 'won' in match.status|lower or 'stumps' in match.status|lower %}
+                    {% if match.status|lower in ['finished', 'abandoned', 'cancelled'] %}
                         <a href="/match/{{ match.id }}" class="match-link">
                             <div class="match-card">
                                 <div>
